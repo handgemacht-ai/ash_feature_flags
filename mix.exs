@@ -9,7 +9,7 @@ defmodule AshFeatureFlags.MixProject do
 
   @version "0.1.0"
 
-  @source_url "https://github.com/marot/ash_feature_flags"
+  @source_url "https://github.com/handgemacht-ai/ash_feature_flags"
 
   def project do
     [

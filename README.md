@@ -2,7 +2,7 @@
 
 [![Hex.pm](https://img.shields.io/hexpm/v/ash_feature_flags.svg)](https://hex.pm/packages/ash_feature_flags)
 [![Hexdocs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/ash_feature_flags)
-[![CI](https://github.com/marot/ash_feature_flags/actions/workflows/ci.yml/badge.svg)](https://github.com/marot/ash_feature_flags/actions/workflows/ci.yml)
+[![CI](https://github.com/handgemacht-ai/ash_feature_flags/actions/workflows/ci.yml/badge.svg)](https://github.com/handgemacht-ai/ash_feature_flags/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Runtime-toggled boolean feature flags for [Ash](https://ash-hq.org) 3.x.
