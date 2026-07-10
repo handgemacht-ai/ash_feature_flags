@@ -31,7 +31,12 @@ defmodule AshFeatureFlags.MixProject do
         summary: [threshold: 80],
         ignore_modules: [
           ~r/^AshFeatureFlags\.Dsl\./,
-          Mix.Tasks.AshFeatureFlags.Install
+          # Pure compile-time code-generation macro (like the DSL modules).
+          AshFeatureFlags.Store.Resource,
+          Mix.Tasks.AshFeatureFlags.Install,
+          # Test-only fixtures and derived protocol impls, not library code.
+          ~r/^Support\./,
+          ~r/^Inspect\./
         ]
       ]
     ]
@@ -67,6 +72,7 @@ defmodule AshFeatureFlags.MixProject do
         "README.md",
         "CHANGELOG.md",
         "usage-rules.md",
+        "LICENSE",
         "documentation/dsls/DSL-AshFeatureFlags.md"
       ],
       groups_for_extras: [
