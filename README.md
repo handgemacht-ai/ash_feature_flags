@@ -32,7 +32,7 @@ Add `ash_feature_flags` to your dependencies:
 ```elixir
 def deps do
   [
-    {:ash_feature_flags, "~> 0.1.0"},
+    {:ash_feature_flags, "~> 0.1"},
     # Optional, for multi-node invalidation:
     {:phoenix_pubsub, "~> 2.1"}
   ]
