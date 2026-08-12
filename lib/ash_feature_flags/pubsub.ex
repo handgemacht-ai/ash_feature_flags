@@ -10,10 +10,10 @@ defmodule AshFeatureFlags.PubSub do
   @spec topic(module()) :: String.t()
   def topic(facade), do: "ash_feature_flags:" <> inspect(facade)
 
-  @spec subscribe(map()) :: :ok | {:error, term()}
-  def subscribe(%{pubsub: nil}), do: :ok
+  @spec subscribe(AshFeatureFlags.Config.t()) :: :ok | {:error, term()}
+  def subscribe(%AshFeatureFlags.Config{pubsub: nil}), do: :ok
 
-  def subscribe(%{pubsub: pubsub, facade: facade}) do
+  def subscribe(%AshFeatureFlags.Config{pubsub: pubsub, facade: facade}) do
     if available?() do
       Phoenix.PubSub.subscribe(pubsub, topic(facade))
     else
@@ -21,10 +21,10 @@ defmodule AshFeatureFlags.PubSub do
     end
   end
 
-  @spec broadcast(map(), term()) :: :ok | {:error, term()}
-  def broadcast(%{pubsub: nil}, _message), do: :ok
+  @spec broadcast(AshFeatureFlags.Config.t(), term()) :: :ok | {:error, term()}
+  def broadcast(%AshFeatureFlags.Config{pubsub: nil}, _message), do: :ok
 
-  def broadcast(%{pubsub: pubsub, facade: facade}, message) do
+  def broadcast(%AshFeatureFlags.Config{pubsub: pubsub, facade: facade}, message) do
     if available?() do
       Phoenix.PubSub.broadcast(pubsub, topic(facade), message)
     else

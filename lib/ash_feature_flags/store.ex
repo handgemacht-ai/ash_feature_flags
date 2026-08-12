@@ -6,11 +6,11 @@ defmodule AshFeatureFlags.Store do
   store behaves like a reset to defaults. The default implementation is
   `AshFeatureFlags.Store.Ash`.
 
-  Callbacks receive the facade config map, which carries `:store` (the Ash
+  Callbacks receive the facade config struct, which carries `:store` (the Ash
   resource) and any other configured options.
   """
 
-  @type config :: map()
+  @type config :: AshFeatureFlags.Config.t()
 
   @callback all(config()) :: {:ok, %{atom() => boolean()}} | {:error, term()}
   @callback put(config(), atom(), boolean()) :: :ok | {:error, term()}

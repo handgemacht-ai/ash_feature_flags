@@ -74,23 +74,29 @@ defmodule AshFeatureFlags do
 
   @impl Spark.Dsl
   def handle_opts(opts) do
-    config = %{
+    config = %AshFeatureFlags.Config{
       otp_app: opts[:otp_app],
       store: opts[:store],
       store_backend: opts[:store_backend],
       pubsub: opts[:pubsub],
       on_load_error: opts[:on_load_error],
       check_telemetry: opts[:check_telemetry],
-      retry_ms: opts[:retry_ms]
+      retry_ms: opts[:retry_ms],
+      facade: nil,
+      name: nil
     }
 
     enabled_def = enabled_def(opts[:check_telemetry])
 
     quote location: :keep do
-      @__ash_feature_flags_config__ Map.put(unquote(Macro.escape(config)), :facade, __MODULE__)
+      @__ash_feature_flags_config__ AshFeatureFlags.Config.put(
+                                      unquote(Macro.escape(config)),
+                                      :facade,
+                                      __MODULE__
+                                    )
 
       @doc false
-      @spec __ash_feature_flags_config__() :: map()
+      @spec __ash_feature_flags_config__() :: AshFeatureFlags.Config.t()
       def __ash_feature_flags_config__, do: @__ash_feature_flags_config__
 
       @doc "Whether `flag` is currently enabled. Raises on an undeclared flag."

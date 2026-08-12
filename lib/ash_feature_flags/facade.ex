@@ -142,7 +142,7 @@ defmodule AshFeatureFlags.Facade do
       config,
       fn key, acc ->
         case Keyword.fetch(init_opts, key) do
-          {:ok, value} -> Map.put(acc, key, value)
+          {:ok, value} -> AshFeatureFlags.Config.put(acc, key, value)
           :error -> acc
         end
       end

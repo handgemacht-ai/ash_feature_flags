@@ -18,9 +18,9 @@ defmodule AshFeatureFlags.Cache do
   @max_backoff_ms 30_000
   @max_attempts 10
 
-  @spec start_link(map()) :: GenServer.on_start()
+  @spec start_link(AshFeatureFlags.Config.t()) :: GenServer.on_start()
   def start_link(config) do
-    GenServer.start_link(__MODULE__, config, name: Map.get(config, :name) || name(config.facade))
+    GenServer.start_link(__MODULE__, config, name: config.name || name(config.facade))
   end
 
   @doc "Registered name of the cache process for a facade."
@@ -48,7 +48,7 @@ defmodule AshFeatureFlags.Cache do
       {:error, reason} ->
         case config.on_load_error do
           :raise -> {:stop, {:load_failed, reason}, state}
-          _ -> {:noreply, retry_after_error(state, reason)}
+          :defaults -> {:noreply, retry_after_error(state, reason)}
         end
     end
   end
@@ -93,7 +93,7 @@ defmodule AshFeatureFlags.Cache do
   end
 
   defp backoff(attempts, config) do
-    base = Map.get(config, :retry_ms, 1000)
+    base = config.retry_ms
     min(base * Integer.pow(2, attempts), @max_backoff_ms)
   end
 end

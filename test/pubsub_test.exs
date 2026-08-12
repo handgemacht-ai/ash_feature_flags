@@ -11,7 +11,7 @@ defmodule AshFeatureFlags.PubSubTest do
 
   describe "no-op without pubsub" do
     test "subscribe and broadcast return :ok when pubsub is nil" do
-      config = %{pubsub: nil, facade: Support.CheckFlags}
+      config = Support.CheckFlags.__ash_feature_flags_config__()
 
       assert PubSub.subscribe(config) == :ok
       assert PubSub.broadcast(config, {:flags_changed, %{}}) == :ok
