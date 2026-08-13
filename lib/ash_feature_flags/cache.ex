@@ -13,8 +13,10 @@ defmodule AshFeatureFlags.Cache do
 
   require Logger
 
-  alias AshFeatureFlags.{FlagSet, Info, PubSub, Runtime}
+  alias AshFeatureFlags.{FlagSet, Info, PubSub, RetryPolicy, Runtime}
 
+  # Library-wide bounds for the retry policy: the delay cap and the attempt
+  # counter cap. The base comes from each facade's `retry_ms` config.
   @max_backoff_ms 30_000
   @max_attempts 10
 
@@ -34,7 +36,14 @@ defmodule AshFeatureFlags.Cache do
     PubSub.subscribe(config)
     send(self(), :load)
 
-    {:ok, %{config: config, defaults: defaults, current: defaults, attempts: 0}}
+    {:ok,
+     %{
+       config: config,
+       defaults: defaults,
+       current: defaults,
+       attempts: 0,
+       retry: RetryPolicy.new(config.retry_ms, @max_backoff_ms, @max_attempts)
+     }}
   end
 
   @impl true
@@ -73,8 +82,8 @@ defmodule AshFeatureFlags.Cache do
         "#{inspect(reason)}; keeping defaults and retrying"
     )
 
-    Process.send_after(self(), :load, backoff(state.attempts, state.config))
-    %{state | attempts: min(state.attempts + 1, @max_attempts)}
+    Process.send_after(self(), :load, RetryPolicy.delay(state.retry, state.attempts))
+    %{state | attempts: RetryPolicy.next_attempt(state.retry, state.attempts)}
   end
 
   defp log_stale(overrides, %FlagSet{flags: flags}, facade) do
@@ -86,10 +95,5 @@ defmodule AshFeatureFlags.Cache do
           inspect(stale)
       )
     end
-  end
-
-  defp backoff(attempts, config) do
-    base = config.retry_ms
-    min(base * Integer.pow(2, attempts), @max_backoff_ms)
   end
 end
