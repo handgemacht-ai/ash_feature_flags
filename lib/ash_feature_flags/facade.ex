@@ -5,7 +5,7 @@ defmodule AshFeatureFlags.Facade do
   `facade.__ash_feature_flags_config__/0`.
   """
 
-  alias AshFeatureFlags.{Info, PubSub, Runtime, Telemetry, UnknownFlagError}
+  alias AshFeatureFlags.{FlagSet, Info, PubSub, Runtime, Telemetry, UnknownFlagError}
 
   @type flag_info :: %{
           name: atom(),
@@ -27,10 +27,14 @@ defmodule AshFeatureFlags.Facade do
   @doc "The effective `%{flag => boolean}` map (declared defaults ⊕ overrides)."
   @spec all(module()) :: %{atom() => boolean()}
   def all(facade) do
-    case Runtime.all(facade) do
-      map when map_size(map) == 0 -> Info.defaults(facade)
-      map -> map
-    end
+    seeded = Runtime.all(facade)
+
+    set =
+      if map_size(seeded) == 0,
+        do: FlagSet.from_defaults(Info.defaults(facade)),
+        else: FlagSet.from_effective(seeded)
+
+    FlagSet.to_map(set)
   end
 
   @doc "Per-flag metadata for building admin screens."

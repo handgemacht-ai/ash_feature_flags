@@ -13,7 +13,7 @@ defmodule AshFeatureFlags.Cache do
 
   require Logger
 
-  alias AshFeatureFlags.{Info, PubSub, Runtime}
+  alias AshFeatureFlags.{FlagSet, Info, PubSub, Runtime}
 
   @max_backoff_ms 30_000
   @max_attempts 10
@@ -61,14 +61,10 @@ defmodule AshFeatureFlags.Cache do
   def handle_info(_message, state), do: {:noreply, state}
 
   defp apply_overrides(state, overrides) do
-    declared = MapSet.new(Map.keys(state.defaults))
-    kept = Map.filter(overrides, fn {key, _value} -> MapSet.member?(declared, key) end)
-
-    log_stale(overrides, kept, state.config.facade)
-
-    effective = Map.merge(state.defaults, kept)
-    Runtime.seed(state.config.facade, effective)
-    %{state | current: effective, attempts: 0}
+    effective = FlagSet.from_overrides(state.defaults, overrides)
+    log_stale(overrides, effective, state.config.facade)
+    Runtime.seed(state.config.facade, FlagSet.to_map(effective))
+    %{state | current: FlagSet.to_map(effective), attempts: 0}
   end
 
   defp retry_after_error(state, reason) do
@@ -81,8 +77,8 @@ defmodule AshFeatureFlags.Cache do
     %{state | attempts: min(state.attempts + 1, @max_attempts)}
   end
 
-  defp log_stale(overrides, kept, facade) do
-    stale = Map.keys(overrides) -- Map.keys(kept)
+  defp log_stale(overrides, %FlagSet{flags: flags}, facade) do
+    stale = Map.keys(overrides) -- Map.keys(flags)
 
     if stale != [] do
       Logger.debug(
