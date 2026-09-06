@@ -1,3 +1,14 @@
+---
+title: AshFeatureFlags — usage rules
+type: reference
+summary: Generated usage-rules carrier for ash_feature_flags — the synced Spark/Ash dependency rules (from `mix sync_usage_rules`) above the package preamble.
+read_when: working on ash_feature_flags code and needing its dependency usage conventions
+owner: ash_feature_flags
+status: current
+tags: [ash, elixir, docs]
+last_verified: 2026-09-06
+---
+
 # AshFeatureFlags
 
 Runtime-toggled boolean feature flags for Ash 3.x. See README.md and usage-rules.md.

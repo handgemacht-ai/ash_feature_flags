@@ -1,3 +1,14 @@
+---
+title: AshFeatureFlags
+type: user-docs
+summary: Hex package README for ash_feature_flags — runtime-toggled boolean feature flags for Ash 3.x, covering installation, configuration, and usage.
+read_when: adding ash_feature_flags to a project or configuring its facade, store resource, or PubSub invalidation
+owner: ash_feature_flags
+status: current
+tags: [ash, elixir]
+last_verified: 2026-09-06
+---
+
 # AshFeatureFlags
 
 [![Hex.pm](https://img.shields.io/hexpm/v/ash_feature_flags.svg)](https://hex.pm/packages/ash_feature_flags)
@@ -154,6 +165,13 @@ Options accepted by `use AshFeatureFlags`:
 | `:on_load_error` | `:defaults` | `:defaults` keeps declared defaults and retries with backoff; `:raise` crashes the cache. |
 | `:check_telemetry` | `false` | Emit a telemetry event on every read. |
 | `:retry_ms` | `1000` | Base backoff between failed override loads. |
+
+The cache GenServer's registered name is not a `use` option — it defaults to
+`<Facade>.Cache` and can be overridden at runtime via the child spec:
+
+```elixir
+{MyApp.Flags, name: MyApp.Flags.CustomCache}
+```
 
 ## Testing your flags
 
